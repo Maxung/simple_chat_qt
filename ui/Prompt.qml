@@ -7,8 +7,8 @@ Pane {
     Layout.fillWidth: true
 
     background: Rectangle {
-        color: "#ffffff"
-        border.color: "#e5e7eb"
+        color: Theme.base
+        border.color: Qt.alpha(Theme.border, 0.05)
         border.width: 1
         radius: 16
     }
@@ -25,6 +25,9 @@ Pane {
             TextArea {
                 id: promptInput
                 placeholderText: "Ask anything..."
+                placeholderTextColor: Theme.placeholderText
+                color: Theme.text
+                selectionColor: Theme.selectionColor
 
                 wrapMode: TextArea.Wrap
                 selectByMouse: true
@@ -39,10 +42,10 @@ Pane {
             Layout.preferredHeight: 32
             Layout.alignment: Qt.AlignBottom
 
-            icon.source: "qrc:/simple_chat_qt/icons/arrow-up.svg"
+            icon.source: "qrc:/qt/qml/simple_chat_qt/icons/arrow-up.svg"
             background: Rectangle {
                 radius: height / 2
-                color: submitButton.pressed ? "#2563eb" : "#3b82f6"
+                color: submitButton.pressed ? Qt.darker(Theme.primaryButton, 1.2) : Theme.primaryButton
             }
             onClicked: console.log("submit")
         }

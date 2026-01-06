@@ -2,12 +2,13 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Window {
+ApplicationWindow {
     width: 800
     height: 600
     visible: true
-    title: "Layout Animation Example"
-    color: "#f0f0f0"
+    title: "SimpleChatQt"
+
+    color: Theme.background
 
     RowLayout {
         anchors.fill: parent
