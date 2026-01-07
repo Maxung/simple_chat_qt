@@ -3,6 +3,9 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 Pane {
+    id: promptField
+    property ListModel model
+
     padding: 8
     Layout.fillWidth: true
 
@@ -45,11 +48,20 @@ Pane {
             icon.source: "qrc:/qt/qml/simple_chat_qt/icons/arrow-up.svg"
             background: Rectangle {
                 radius: height / 2
-                color: submitButton.pressed ? Qt.darker(
-                                                  Theme.primaryButton,
-                                                  1.2) : Theme.primaryButton
+                color: submitButton.pressed ? Qt.darker(Theme.primaryButton, 1.2) : Theme.primaryButton
             }
-            onClicked: console.log("submit")
+            onClicked: {
+                promptField.model.append({
+                    role: "sender",
+                    content: promptInput.text
+                });
+                promptInput.clear();
+
+                promptField.model.append({
+                    role: "receiver",
+                    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sed est porta, dignissim leo in, convallis diam. Sed a suscipit erat. Duis at nulla in arcu semper dapibus vel sed massa. Etiam vitae lorem neque. Nulla facilisi. Nunc aliquet vel ligula nec tempor. Maecenas consequat metus id arcu iaculis rutrum sit amet in sem."
+                });
+            }
         }
     }
 }

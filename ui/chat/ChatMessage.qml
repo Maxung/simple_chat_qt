@@ -5,9 +5,10 @@ Rectangle {
 
     property string content: "Hallo"
     property bool isSender: false
+    readonly property real maxTextWidth: (parent.width) - 24
 
-    width: Math.min(textDisplay.implicitWidth + 24, parent.width * 0.7)
-    height: textDisplay.implicitHeight + 16
+    width: textDisplay.width + 24
+    height: textDisplay.height + 16
     radius: 20
     anchors.margins: 10
 
@@ -15,6 +16,7 @@ Rectangle {
         id: textDisplay
         text: bubble.content
         wrapMode: Text.WordWrap
+        width: Math.min(implicitWidth, bubble.maxTextWidth)
         anchors.centerIn: parent
         color: Theme.text
     }

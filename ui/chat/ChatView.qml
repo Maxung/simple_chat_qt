@@ -13,69 +13,7 @@ ListView {
         policy: ScrollBar.AsNeeded
     }
 
-    model: ListModel {
-        id: chatModel
-        ListElement {
-            role: "sender"
-            content: "Hello! How are you?"
-        }
-        ListElement {
-            role: "receiver"
-            content: "I'm doing great, thanks for asking!"
-        }
-        ListElement {
-            role: "sender"
-            content: "Glad to hear that. Did you finish the QML project?"
-        }
-        ListElement {
-            role: "sender"
-            content: "Hello! How are you?"
-        }
-        ListElement {
-            role: "receiver"
-            content: "I'm doing great, thanks for asking!"
-        }
-        ListElement {
-            role: "sender"
-            content: "Glad to hear that. Did you finish the QML project?"
-        }
-        ListElement {
-            role: "sender"
-            content: "Hello! How are you?"
-        }
-        ListElement {
-            role: "receiver"
-            content: "I'm doing great, thanks for asking!"
-        }
-        ListElement {
-            role: "sender"
-            content: "Glad to hear that. Did you finish the QML project?"
-        }
-        ListElement {
-            role: "sender"
-            content: "Hello! How are you?"
-        }
-        ListElement {
-            role: "receiver"
-            content: "I'm doing great, thanks for asking!"
-        }
-        ListElement {
-            role: "sender"
-            content: "Glad to hear that. Did you finish the QML project?"
-        }
-        ListElement {
-            role: "sender"
-            content: "Hello! How are you?"
-        }
-        ListElement {
-            role: "receiver"
-            content: "I'm doing great, thanks for asking!"
-        }
-        ListElement {
-            role: "sender"
-            content: "Glad to hear that. Did you finish the QML project?"
-        }
-    }
+    model: model
 
     clip: true
     spacing: 8

@@ -10,13 +10,21 @@ ApplicationWindow {
 
     color: Theme.background
 
+    ListModel {
+        id: chatModel
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 8
 
-        ChatView {}
+        ChatView {
+            model: chatModel
+        }
 
-        Prompt {}
+        Prompt {
+            model: chatModel
+        }
     }
 }
