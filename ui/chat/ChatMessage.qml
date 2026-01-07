@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 
 Rectangle {
     property string content: "Hallo"
@@ -7,7 +8,11 @@ Rectangle {
     id: message_bubble
     width: Math.min(textDisplay.implicitWidth + 24, parent.width * 0.7)
     height: textDisplay.implicitHeight + 16
-    radius: 12
+
+    topLeftRadius: isSender ? 20 : 0
+    bottomLeftRadius: isSender ? 20 : 0
+    topRightRadius: 0
+    bottomRightRadius: isSender ? 20 : 0
 
     color: isSender ? "#DCF8C6" : "#FFFFFF"
     border.color: "#E0E0E0"
