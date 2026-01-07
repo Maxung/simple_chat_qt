@@ -45,7 +45,9 @@ Pane {
             icon.source: "qrc:/qt/qml/simple_chat_qt/icons/arrow-up.svg"
             background: Rectangle {
                 radius: height / 2
-                color: submitButton.pressed ? Qt.darker(Theme.primaryButton, 1.2) : Theme.primaryButton
+                color: submitButton.pressed ? Qt.darker(
+                                                  Theme.primaryButton,
+                                                  1.2) : Theme.primaryButton
             }
             onClicked: console.log("submit")
         }

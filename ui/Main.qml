@@ -10,10 +10,12 @@ ApplicationWindow {
 
     color: Theme.background
 
-    RowLayout {
+    ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 8
+
+        ChatView {}
 
         Prompt {}
     }
