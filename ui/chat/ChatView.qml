@@ -2,37 +2,79 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-ListView {
+Flickable {
     id: chatView
+
+    property alias model: messageRepeater.model
+    property bool autoScroll: true
+
     Layout.fillWidth: true
-    Layout.fillHeight: true
+    Layout.fillHeight: model.count > 0
+
+    contentHeight: messageColumn.height
+    contentWidth: width
+    clip: true
 
     ScrollBar.vertical: ScrollBar {
-        id: vBar
-        active: true
         policy: ScrollBar.AsNeeded
     }
 
-    model: model
+    Column {
+        id: messageColumn
+        width: parent.width
+        spacing: 8
 
-    clip: true
-    spacing: 8
+        Repeater {
+            id: messageRepeater
 
-    onCountChanged: chatView.positionViewAtEnd()
+            delegate: Item {
+                id: delegateRoot
 
-    delegate: Item {
-        width: ListView.view.width
-        height: messageBubble.height + 10
+                width: parent.width
+                height: messageBubble.height + 10
 
-        required property string role
-        required property string content
+                required property int index
+                required property string role
+                required property string content
 
-        readonly property bool isSender: role === "sender"
+                readonly property bool isSender: role === "sender"
 
-        ChatMessage {
-            id: messageBubble
-            isSender: parent.isSender
-            content: parent.content
+                ChatMessage {
+                    id: messageBubble
+
+                    isSender: delegateRoot.isSender
+                    content: delegateRoot.content
+                    maxBubbleWidth: delegateRoot.width - 20
+
+                    x: delegateRoot.isSender ? (delegateRoot.width - width - 10) : 10
+                    y: 5
+                }
+            }
+
+            onCountChanged: {
+                if (chatView.autoScroll) {
+                    scrollTimer.restart()
+                }
+            }
         }
+    }
+
+    Timer {
+        id: scrollTimer
+        interval: 10
+        onTriggered: chatView.scrollToEnd()
+    }
+
+    function scrollToEnd() {
+        scrollAnimation.to = Math.max(0, contentHeight - height)
+        scrollAnimation.start()
+    }
+
+    NumberAnimation {
+        id: scrollAnimation
+        target: chatView
+        property: "contentY"
+        duration: 200
+        easing.type: Easing.OutCubic
     }
 }

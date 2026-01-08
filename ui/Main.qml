@@ -22,7 +22,6 @@ ApplicationWindow {
         ChatView {
             model: chatModel
         }
-
         Prompt {
             model: chatModel
         }
