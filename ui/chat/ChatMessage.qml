@@ -19,6 +19,7 @@ Rectangle {
 
         text: bubble.content
         wrapMode: Text.WordWrap
+        textFormat: Text.MarkdownText
         width: Math.min(implicitWidth, bubble.maxBubbleWidth - 24)
         anchors.centerIn: parent
         color: Theme.text
