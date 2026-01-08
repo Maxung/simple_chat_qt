@@ -7,9 +7,7 @@ Flickable {
 
     property alias model: messageRepeater.model
     property bool autoScroll: true
-
-    Layout.fillWidth: true
-    Layout.fillHeight: model.count > 0
+    property bool containerAnimating: false // New property
 
     contentHeight: messageColumn.height
     contentWidth: width
@@ -62,12 +60,31 @@ Flickable {
     Timer {
         id: scrollTimer
         interval: 10
+        onTriggered: {
+            if (chatView.containerAnimating) {
+                waitForAnimation.restart()
+            } else {
+                chatView.scrollToEnd()
+            }
+        }
+    }
+
+    Timer {
+        id: waitForAnimation
+        interval: 350
         onTriggered: chatView.scrollToEnd()
     }
 
     function scrollToEnd() {
-        scrollAnimation.to = Math.max(0, contentHeight - height)
-        scrollAnimation.start()
+        var target = Math.max(0, contentHeight - height)
+
+        // Snap if container just expanded (first message)
+        if (messageRepeater.count === 1) {
+            contentY = target
+        } else {
+            scrollAnimation.to = target
+            scrollAnimation.start()
+        }
     }
 
     NumberAnimation {
