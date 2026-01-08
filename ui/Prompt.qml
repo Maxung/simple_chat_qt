@@ -49,18 +49,45 @@ Pane {
             icon.source: "qrc:/qt/qml/simple_chat_qt/icons/arrow-up.svg"
             background: Rectangle {
                 radius: height / 2
-                color: submitButton.pressed ? Qt.darker(
-                                                  Theme.primaryButton,
-                                                  1.2) : Theme.primaryButton
+                color: submitButton.pressed ? Qt.darker(Theme.primaryButton, 1.2) : Theme.primaryButton
             }
             onClicked: {
-                OpenAIClient.sendPrompt(promptInput.text)
                 promptField.model.append({
-                                             "role": "sender",
-                                             "content": promptInput.text
-                                         })
-                promptInput.clear()
+                    "role": "sender",
+                    "content": promptInput.text
+                });
+
+                promptField.model.append({
+                    "role": "receiver",
+                    "content": ""
+                });
+                OpenAIClient.sendPrompt(promptInput.text);
+                promptInput.clear();
             }
+        }
+    }
+
+    Connections {
+        target: OpenAIClient
+
+        function onPartialResponse(text) {
+            if (promptField.model.count === 0)
+                return;
+            const lastIndex = promptField.model.count - 1;
+            const currentText = promptField.model.get(lastIndex).content;
+
+            promptField.model.set(lastIndex, {
+                role: promptField.model.get(lastIndex).role,
+                content: currentText + text
+            });
+        }
+
+        function onFinished() {
+            console.log("Done");
+        }
+
+        function onError(message) {
+            console.error(message);
         }
     }
 }
