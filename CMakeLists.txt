@@ -30,6 +30,8 @@ qt_add_qml_module(appsimple_chat_qt
     RESOURCES
         icons/arrow-up.svg
         QML_FILES ui/chat/ChatMessage.qml
+    SOURCES
+        openaiclient.h openaiclient.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
