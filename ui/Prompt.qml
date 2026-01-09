@@ -5,7 +5,6 @@ import simple_chat_qt
 
 Pane {
     id: promptField
-    property ListModel model
 
     padding: 8
     Layout.fillWidth: true
@@ -52,15 +51,6 @@ Pane {
                 color: submitButton.pressed ? Qt.darker(Theme.primaryButton, 1.2) : Theme.primaryButton
             }
             onClicked: {
-                promptField.model.append({
-                    "role": "sender",
-                    "content": promptInput.text
-                });
-
-                promptField.model.append({
-                    "role": "receiver",
-                    "content": ""
-                });
                 OpenAIClient.sendPrompt(promptInput.text);
                 promptInput.clear();
             }
@@ -73,18 +63,6 @@ Pane {
 
     Connections {
         target: OpenAIClient
-
-        function onPartialResponse(text) {
-            if (promptField.model.count === 0)
-                return;
-            const lastIndex = promptField.model.count - 1;
-            const currentText = promptField.model.get(lastIndex).content;
-
-            promptField.model.set(lastIndex, {
-                role: promptField.model.get(lastIndex).role,
-                content: currentText + text
-            });
-        }
 
         function onFinished() {
             console.log("Done");

@@ -1,12 +1,21 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QThread>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+
 
 #include "openaiclient.h"
+#include "chatmodel.h"
 
 OpenAIClient::OpenAIClient(QObject *parent) : QObject(parent) {}
 
 void OpenAIClient::sendPrompt(const QString &prompt) {
+  auto model = ChatModel::instance();
+  model->appendMessage("sender", prompt);
+  model->appendMessage("receiver", "");  
+
   QNetworkRequest request(
       QUrl("https://openrouter.ai/api/v1/chat/completions"));
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -41,8 +50,10 @@ void OpenAIClient::onReadyRead() {
     QJsonDocument doc = QJsonDocument::fromJson(jsonData);
     auto delta = doc["choices"][0]["delta"]["content"].toString();
 
-    if (!delta.isEmpty())
-      emit partialResponse(delta);
+    if (!delta.isEmpty()) {
+      auto model = ChatModel::instance();
+      model->appendToLastMessage(delta);
+    }
   }
 }
 

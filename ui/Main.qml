@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import simple_chat_qt
 
 ApplicationWindow {
     width: 800
@@ -9,10 +10,6 @@ ApplicationWindow {
     title: "SimpleChatQt"
 
     color: Theme.background
-
-    ListModel {
-        id: chatModel
-    }
 
     ColumnLayout {
         id: mainLayout
@@ -24,7 +21,7 @@ ApplicationWindow {
             id: chatContainer
             Layout.fillWidth: true
 
-            property real expandRatio: chatModel.count > 0 ? 1.0 : 0.0
+            property real expandRatio: ChatModel.count > 0 ? 1.0 : 0.0
             property bool isAnimating: expandAnimation.running
 
             Behavior on expandRatio {
@@ -42,14 +39,13 @@ ApplicationWindow {
 
             ChatView {
                 anchors.fill: parent
-                model: chatModel
+                model: ChatModel
                 containerAnimating: chatContainer.isAnimating // Pass this down
             }
         }
 
         Prompt {
             id: prompt
-            model: chatModel
         }
     }
 }

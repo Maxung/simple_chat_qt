@@ -1,13 +1,12 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 
 Flickable {
     id: chatView
 
     property alias model: messageRepeater.model
     property bool autoScroll: true
-    property bool containerAnimating: false // New property
+    property bool containerAnimating: false
 
     contentHeight: messageColumn.height
     contentWidth: width
@@ -78,7 +77,6 @@ Flickable {
     function scrollToEnd() {
         var target = Math.max(0, contentHeight - height)
 
-        // Snap if container just expanded (first message)
         if (messageRepeater.count === 1) {
             contentY = target
         } else {

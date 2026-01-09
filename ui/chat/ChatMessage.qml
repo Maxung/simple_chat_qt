@@ -14,7 +14,7 @@ Rectangle {
     color: isSender ? Theme.bubbleBackground : Theme.background
     border.color: isSender ? "transparent" : Theme.background
 
-    Text {
+    TextEdit {
         id: textDisplay
 
         text: bubble.content
@@ -23,5 +23,6 @@ Rectangle {
         width: Math.min(implicitWidth, bubble.maxBubbleWidth - 24)
         anchors.centerIn: parent
         color: Theme.text
+        readOnly: true
     }
 }
