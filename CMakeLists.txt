@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Svg QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Svg QuickControls2)
 
 
 qt_add_executable(appsimple_chat_qt

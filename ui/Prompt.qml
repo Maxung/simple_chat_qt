@@ -65,6 +65,10 @@ Pane {
                 promptInput.clear();
             }
         }
+        Shortcut {
+            sequences: ["Ctrl+Return", "Ctrl+Enter"]
+            onActivated: submitButton.clicked()
+        }
     }
 
     Connections {

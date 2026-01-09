@@ -13,11 +13,9 @@ void OpenAIClient::sendPrompt(const QString &prompt) {
   request.setRawHeader("Authorization",
                        QByteArray("Bearer ") + qgetenv("OPENAI_API_KEY"));
 
-  QJsonObject payload{
-      {"model", "openai/gpt-5-nano"},
-      {"stream", true},
-      {"messages",
-       QJsonArray{QJsonObject{{"role", "user"}, {"content", prompt}}}}};
+  QJsonObject payload{{"model", "nvidia/nemotron-3-nano-30b-a3b:free"},
+                      {"stream", true},
+                      {"messages", QJsonArray{QJsonObject{{"role", "user"}, {"content", prompt}}}}};
 
   m_reply = m_manager.post(
       request, QJsonDocument(payload).toJson(QJsonDocument::Compact));
