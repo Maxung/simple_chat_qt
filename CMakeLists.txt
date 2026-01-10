@@ -1,11 +1,22 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(simple_chat_qt VERSION 0.1 LANGUAGES CXX)
+include(FetchContent)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
+set(BUILD_MD4QT_TESTS OFF)
+
+FetchContent_Declare(
+    md4qt
+    GIT_REPOSITORY https://invent.kde.org/libraries/md4qt
+    GIT_TAG        master
+)
+
+FetchContent_MakeAvailable(md4qt)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Quick Svg QuickControls2)
 
@@ -49,7 +60,7 @@ set_target_properties(appsimple_chat_qt PROPERTIES
 )
 
 target_link_libraries(appsimple_chat_qt
-    PRIVATE Qt6::Quick Qt6::Svg Qt6::QuickControls2
+  PRIVATE md4qt Qt6::Core Qt6::Quick Qt6::Svg Qt6::QuickControls2
 )
 
 include(GNUInstallDirs)

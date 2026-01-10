@@ -33,6 +33,7 @@ Flickable {
                 required property int index
                 required property string role
                 required property string content
+                required property string htmlContent
 
                 readonly property bool isSender: role === "sender"
 
@@ -40,7 +41,7 @@ Flickable {
                     id: messageBubble
 
                     isSender: delegateRoot.isSender
-                    content: delegateRoot.content
+                    content: delegateRoot.htmlContent
                     maxBubbleWidth: delegateRoot.width - 20
 
                     x: delegateRoot.isSender ? (delegateRoot.width - width - 10) : 10

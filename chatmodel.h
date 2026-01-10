@@ -3,11 +3,12 @@
 
 #include <QAbstractListModel>
 #include <QQmlEngine>
-#include <cstddef>
+#include <parser.h>
 
 struct ChatMessage {
     QString role;
     QString content;
+    QString htmlContent;
 };
 
 class ChatModel : public QAbstractListModel
@@ -20,7 +21,8 @@ class ChatModel : public QAbstractListModel
 public:
     enum Roles {
         RoleRole = Qt::UserRole + 1,
-        ContentRole
+        ContentRole,
+        HTMLContentRole
     };
 
     static ChatModel *instance();
@@ -36,6 +38,7 @@ public:
     Q_INVOKABLE void appendToLastMessage(const QString &textChunk);
     Q_INVOKABLE void updateLastMessage(const QString &content);
     Q_INVOKABLE void clear();
+    void dump();
 
 signals:
     void countChanged();
@@ -44,6 +47,7 @@ private:
     explicit ChatModel(QObject *parent = nullptr);
     QList<ChatMessage> m_messages;
     static ChatModel *s_instance;
+    MD::Parser md;
 };
 
 #endif // CHATMODEL_H

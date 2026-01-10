@@ -1,66 +1,70 @@
+#include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QThread>
-#include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QThread>
 
-
-#include "openaiclient.h"
 #include "chatmodel.h"
+#include "openaiclient.h"
 
 OpenAIClient::OpenAIClient(QObject *parent) : QObject(parent) {}
 
 void OpenAIClient::sendPrompt(const QString &prompt) {
-  auto model = ChatModel::instance();
-  model->appendMessage("sender", prompt);
-  model->appendMessage("receiver", "");  
+    auto model = ChatModel::instance();
+    model->appendMessage("sender", prompt);
+    model->appendMessage("receiver", "");
 
-  QNetworkRequest request(
-      QUrl("https://openrouter.ai/api/v1/chat/completions"));
-  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-  request.setRawHeader("Authorization",
-                       QByteArray("Bearer ") + qgetenv("OPENAI_API_KEY"));
+    QNetworkRequest request(
+        QUrl("https://openrouter.ai/api/v1/chat/completions"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization",
+                         QByteArray("Bearer ") + qgetenv("OPENAI_API_KEY"));
 
-  QJsonObject payload{{"model", "nvidia/nemotron-3-nano-30b-a3b:free"},
-                      {"stream", true},
-                      {"messages", QJsonArray{QJsonObject{{"role", "user"}, {"content", prompt}}}}};
+    QJsonObject payload{
+        {"model", "nvidia/nemotron-3-nano-30b-a3b:free"},
+        {"stream", true},
+        {"messages",
+         QJsonArray{QJsonObject{{"role", "user"}, {"content", prompt}}}}};
 
-  m_reply = m_manager.post(
-      request, QJsonDocument(payload).toJson(QJsonDocument::Compact));
+    m_reply = m_manager.post(
+        request, QJsonDocument(payload).toJson(QJsonDocument::Compact));
 
-  connect(m_reply, &QNetworkReply::readyRead, this, &OpenAIClient::onReadyRead);
-  connect(m_reply, &QNetworkReply::finished, this, &OpenAIClient::onFinished);
+    connect(m_reply, &QNetworkReply::readyRead, this,
+            &OpenAIClient::onReadyRead);
+    connect(m_reply, &QNetworkReply::finished, this, &OpenAIClient::onFinished);
 }
 
 void OpenAIClient::onReadyRead() {
-  while (m_reply->canReadLine()) {
-    QByteArray line = m_reply->readLine().trimmed();
+    while (m_reply->canReadLine()) {
+        QByteArray line = m_reply->readLine().trimmed();
 
-    if (!line.startsWith("data:"))
-      continue;
+        if (!line.startsWith("data:"))
+            continue;
 
-    QByteArray jsonData = line.mid(5).trimmed();
+        QByteArray jsonData = line.mid(5).trimmed();
 
-    if (jsonData == "[DONE]") {
-      emit finished();
-      return;
+        if (jsonData == "[DONE]") {
+            auto model = ChatModel::instance();
+            model->dump();
+            emit finished();
+            return;
+        }
+
+        QJsonDocument doc = QJsonDocument::fromJson(jsonData);
+        auto delta = doc["choices"][0]["delta"]["content"].toString();
+
+        if (!delta.isEmpty()) {
+            auto model = ChatModel::instance();
+            model->appendToLastMessage(delta);
+        }
     }
-
-    QJsonDocument doc = QJsonDocument::fromJson(jsonData);
-    auto delta = doc["choices"][0]["delta"]["content"].toString();
-
-    if (!delta.isEmpty()) {
-      auto model = ChatModel::instance();
-      model->appendToLastMessage(delta);
-    }
-  }
 }
 
 void OpenAIClient::onFinished() {
-  if (m_reply->error() != QNetworkReply::NoError)
-    emit error(m_reply->errorString());
+    if (m_reply->error() != QNetworkReply::NoError)
+        emit error(m_reply->errorString());
 
-  m_reply->deleteLater();
-  m_reply = nullptr;
+    m_reply->deleteLater();
+    m_reply = nullptr;
 }
