@@ -1,12 +1,15 @@
 import QtQuick
 import QtQuick.Controls
 
+import simple_chat_qt
+
 Flickable {
     id: chatView
 
     property alias model: messageRepeater.model
     property bool autoScroll: true
     property bool containerAnimating: false
+    property bool forceImmediateScroll: false
 
     contentHeight: messageColumn.height
     contentWidth: width
@@ -51,8 +54,19 @@ Flickable {
 
             onCountChanged: {
                 if (chatView.autoScroll) {
+                    chatView.forceImmediateScroll = false
                     scrollTimer.restart()
                 }
+            }
+        }
+    }
+
+    Connections {
+        target: ChatModel
+        function onMessageUpdated(index) {
+            if (chatView.autoScroll && index === messageRepeater.count - 1) {
+                chatView.forceImmediateScroll = true
+                scrollTimer.restart()
             }
         }
     }
@@ -64,7 +78,8 @@ Flickable {
             if (chatView.containerAnimating) {
                 waitForAnimation.restart()
             } else {
-                chatView.scrollToEnd()
+                chatView.scrollToEnd(chatView.forceImmediateScroll)
+                chatView.forceImmediateScroll = false
             }
         }
     }
@@ -72,15 +87,22 @@ Flickable {
     Timer {
         id: waitForAnimation
         interval: 350
-        onTriggered: chatView.scrollToEnd()
+        onTriggered: {
+            chatView.scrollToEnd(chatView.forceImmediateScroll)
+            chatView.forceImmediateScroll = false
+        }
     }
 
-    function scrollToEnd() {
+    function scrollToEnd(immediate) {
         var target = Math.max(0, contentHeight - height)
 
-        if (messageRepeater.count === 1) {
+        if (immediate || messageRepeater.count === 1) {
+            scrollAnimation.stop()
             contentY = target
         } else {
+            if (scrollAnimation.running) {
+                scrollAnimation.stop()
+            }
             scrollAnimation.to = target
             scrollAnimation.start()
         }

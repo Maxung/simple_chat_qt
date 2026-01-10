@@ -9,6 +9,7 @@ struct ChatMessage {
     QString role;
     QString content;
     QString htmlContent;
+    quint64 revision = 0;
 };
 
 class ChatModel : public QAbstractListModel
@@ -42,12 +43,15 @@ public:
 
 signals:
     void countChanged();
+    void messageUpdated(int index);
 
 private:
     explicit ChatModel(QObject *parent = nullptr);
     QList<ChatMessage> m_messages;
     static ChatModel *s_instance;
     MD::Parser md;
+    quint64 m_revisionCounter = 0;
+    void queueHtmlReparse(int index);
 };
 
 #endif // CHATMODEL_H

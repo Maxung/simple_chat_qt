@@ -18,7 +18,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(md4qt)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Svg QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Svg QuickControls2 Concurrent)
 
 
 qt_add_executable(appsimple_chat_qt
@@ -60,7 +60,7 @@ set_target_properties(appsimple_chat_qt PROPERTIES
 )
 
 target_link_libraries(appsimple_chat_qt
-  PRIVATE md4qt Qt6::Core Qt6::Quick Qt6::Svg Qt6::QuickControls2
+  PRIVATE md4qt Qt6::Core Qt6::Quick Qt6::Svg Qt6::QuickControls2 Qt6::Concurrent
 )
 
 include(GNUInstallDirs)

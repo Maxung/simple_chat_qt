@@ -1,6 +1,9 @@
 #include "chatmodel.h"
 #include <QFile>
+#include <QFutureWatcher>
 #include <QIODevice>
+#include <QThreadPool>
+#include <QtConcurrent>
 #include <html.h>
 
 ChatModel *ChatModel::s_instance = nullptr;
@@ -55,9 +58,11 @@ void ChatModel::appendMessage(const QString &role, const QString &content) {
     const auto html = MD::toHtml(doc);
 
     beginInsertRows(QModelIndex(), m_messages.count(), m_messages.count());
-    m_messages.append({role, content, html});
+    ChatMessage message{role, content, html};
+    m_messages.append(message);
     endInsertRows();
     emit countChanged();
+    emit messageUpdated(m_messages.count() - 1);
 }
 
 void ChatModel::appendToLastMessage(const QString &textChunk) {
@@ -66,14 +71,10 @@ void ChatModel::appendToLastMessage(const QString &textChunk) {
 
     int lastIndex = m_messages.count() - 1;
     m_messages[lastIndex].content += textChunk;
-    QTextStream stream(const_cast<QString *>(&m_messages[lastIndex].content),
-                       QIODevice::ReadOnly);
-    auto doc = md.parse(stream, QString(), QString());
-    const auto html = MD::toHtml(doc);
-    m_messages[lastIndex].htmlContent = html;
-
     QModelIndex idx = index(lastIndex);
-    emit dataChanged(idx, idx, {HTMLContentRole});
+    emit dataChanged(idx, idx, {ContentRole});
+    emit messageUpdated(lastIndex);
+    queueHtmlReparse(lastIndex);
 }
 
 void ChatModel::updateLastMessage(const QString &content) {
@@ -84,6 +85,8 @@ void ChatModel::updateLastMessage(const QString &content) {
     m_messages[lastIndex].content = content;
     QModelIndex idx = index(lastIndex);
     emit dataChanged(idx, idx, {ContentRole});
+    emit messageUpdated(lastIndex);
+    queueHtmlReparse(lastIndex);
 }
 
 void ChatModel::dump() {
@@ -103,4 +106,43 @@ void ChatModel::clear() {
     m_messages.clear();
     endResetModel();
     emit countChanged();
+}
+
+void ChatModel::queueHtmlReparse(int index) {
+    if (index < 0 || index >= m_messages.count())
+        return;
+
+    const quint64 revision = ++m_revisionCounter;
+    m_messages[index].revision = revision;
+    QString content = m_messages[index].content;
+
+    auto watcher = new QFutureWatcher<QString>(this);
+
+    connect(watcher, &QFutureWatcher<QString>::finished, this,
+            [this, watcher, index, revision]() {
+                watcher->deleteLater();
+
+                if (index < 0 || index >= m_messages.count())
+                    return;
+
+                if (m_messages[index].revision != revision)
+                    return;
+
+                const auto html = watcher->result();
+                m_messages[index].htmlContent = html;
+
+                QModelIndex idx = this->index(index);
+                emit dataChanged(idx, idx, {HTMLContentRole});
+                emit messageUpdated(index);
+            });
+
+    watcher->setFuture(QtConcurrent::run(QThreadPool::globalInstance(),
+                                         [content = std::move(content)]() mutable {
+                                             QTextStream stream(&content,
+                                                                QIODevice::ReadOnly);
+                                             MD::Parser parser;
+                                             auto doc =
+                                                 parser.parse(stream, QString(), QString());
+                                             return MD::toHtml(doc);
+                                         }));
 }

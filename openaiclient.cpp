@@ -56,7 +56,12 @@ void OpenAIClient::onReadyRead() {
 
         if (!delta.isEmpty()) {
             auto model = ChatModel::instance();
-            model->appendToLastMessage(delta);
+            QMetaObject::invokeMethod(
+                model,
+                [model, delta]() {
+                    model->appendToLastMessage(delta);
+                },
+                Qt::QueuedConnection);
         }
     }
 }
