@@ -12,8 +12,8 @@ OpenAIClient::OpenAIClient(QObject *parent) : QObject(parent) {}
 
 void OpenAIClient::sendPrompt(const QString &prompt) {
     auto model = ChatModel::instance();
-    model->appendMessage("sender", prompt);
-    model->appendMessage("receiver", "");
+    model->appendMessage("user", prompt);
+    model->appendMessage("assistant", "");
 
     QNetworkRequest request(
         QUrl("https://openrouter.ai/api/v1/chat/completions"));
@@ -21,11 +21,9 @@ void OpenAIClient::sendPrompt(const QString &prompt) {
     request.setRawHeader("Authorization",
                          QByteArray("Bearer ") + qgetenv("OPENAI_API_KEY"));
 
-    QJsonObject payload{
-        {"model", "nvidia/nemotron-3-nano-30b-a3b:free"},
-        {"stream", true},
-        {"messages",
-         QJsonArray{QJsonObject{{"role", "user"}, {"content", prompt}}}}};
+    QJsonObject payload{{"model", "nvidia/nemotron-3-nano-30b-a3b:free"},
+                        {"stream", true},
+                        {"messages", model->modelToJson()}};
 
     m_reply = m_manager.post(
         request, QJsonDocument(payload).toJson(QJsonDocument::Compact));
@@ -57,10 +55,7 @@ void OpenAIClient::onReadyRead() {
         if (!delta.isEmpty()) {
             auto model = ChatModel::instance();
             QMetaObject::invokeMethod(
-                model,
-                [model, delta]() {
-                    model->appendToLastMessage(delta);
-                },
+                model, [model, delta]() { model->appendToLastMessage(delta); },
                 Qt::QueuedConnection);
         }
     }

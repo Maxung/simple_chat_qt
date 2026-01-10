@@ -4,15 +4,15 @@ Rectangle {
     id: bubble
 
     property string content: ""
-    property bool isSender: false
+    property bool isUser: false
     property real maxBubbleWidth: 300
 
     width: textDisplay.width + 24
     height: textDisplay.height + 16
     radius: 20
 
-    color: isSender ? Theme.bubbleBackground : Theme.background
-    border.color: isSender ? "transparent" : Theme.background
+    color: isUser ? Theme.bubbleBackground : Theme.background
+    border.color: isUser ? "transparent" : Theme.background
 
     TextEdit {
         id: textDisplay

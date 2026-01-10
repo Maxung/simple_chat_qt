@@ -101,6 +101,15 @@ void ChatModel::dump() {
     file.close();
 }
 
+QJsonArray ChatModel::modelToJson() {
+    QJsonArray arr;
+    for (const auto &message : m_messages) {
+        arr.push_back(
+            QJsonObject{{"role", message.role}, {"content", message.content}});
+    }
+    return arr;
+}
+
 void ChatModel::clear() {
     beginResetModel();
     m_messages.clear();
@@ -136,13 +145,12 @@ void ChatModel::queueHtmlReparse(int index) {
                 emit messageUpdated(index);
             });
 
-    watcher->setFuture(QtConcurrent::run(QThreadPool::globalInstance(),
-                                         [content = std::move(content)]() mutable {
-                                             QTextStream stream(&content,
-                                                                QIODevice::ReadOnly);
-                                             MD::Parser parser;
-                                             auto doc =
-                                                 parser.parse(stream, QString(), QString());
-                                             return MD::toHtml(doc);
-                                         }));
+    watcher->setFuture(QtConcurrent::run(
+        QThreadPool::globalInstance(),
+        [content = std::move(content)]() mutable {
+            QTextStream stream(&content, QIODevice::ReadOnly);
+            MD::Parser parser;
+            auto doc = parser.parse(stream, QString(), QString());
+            return MD::toHtml(doc);
+        }));
 }

@@ -12,19 +12,14 @@ struct ChatMessage {
     quint64 revision = 0;
 };
 
-class ChatModel : public QAbstractListModel
-{
+class ChatModel : public QAbstractListModel {
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 
-public:
-    enum Roles {
-        RoleRole = Qt::UserRole + 1,
-        ContentRole,
-        HTMLContentRole
-    };
+  public:
+    enum Roles { RoleRole = Qt::UserRole + 1, ContentRole, HTMLContentRole };
 
     static ChatModel *instance();
     static ChatModel *create(QQmlEngine *qmlEngine, QJSEngine *jsEngine);
@@ -40,12 +35,13 @@ public:
     Q_INVOKABLE void updateLastMessage(const QString &content);
     Q_INVOKABLE void clear();
     void dump();
+    QJsonArray modelToJson();
 
-signals:
+  signals:
     void countChanged();
     void messageUpdated(int index);
 
-private:
+  private:
     explicit ChatModel(QObject *parent = nullptr);
     QList<ChatMessage> m_messages;
     static ChatModel *s_instance;
