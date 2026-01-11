@@ -45,7 +45,7 @@ Flickable {
 
                     isUser: delegateRoot.isUser
                     content: delegateRoot.htmlContent
-                    maxBubbleWidth: delegateRoot.width - 20
+                    maxBubbleWidth: delegateRoot.isUser ? (delegateRoot.width * 0.8 - 20) : (delegateRoot.width - 20)
 
                     x: delegateRoot.isUser ? (delegateRoot.width - width - 10) : 10
                     y: 5
