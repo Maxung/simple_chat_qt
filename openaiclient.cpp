@@ -1,14 +1,34 @@
+#include <QCoreApplication>
 #include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QQmlApplicationEngine>
+#include <QSettings>
 #include <QThread>
 
 #include "chatmodel.h"
 #include "openaiclient.h"
 
-OpenAIClient::OpenAIClient(QObject *parent) : QObject(parent) {}
+OpenAIClient::OpenAIClient(QObject *parent) : QObject(parent) {
+    QSettings settings;
+    m_model = settings.value("model",
+                             QStringLiteral("nvidia/nemotron-3-nano-30b-a3b:free"))
+                   .toString();
+}
+
+QString OpenAIClient::currentModel() const {
+    return m_model;
+}
+
+void OpenAIClient::setModel(const QString &model) {
+    if (model.isEmpty() || model == m_model)
+        return;
+
+    m_model = model;
+    QSettings settings;
+    settings.setValue("model", m_model);
+}
 
 void OpenAIClient::sendPrompt(const QString &prompt) {
     auto model = ChatModel::instance();
@@ -21,7 +41,7 @@ void OpenAIClient::sendPrompt(const QString &prompt) {
     request.setRawHeader("Authorization",
                          QByteArray("Bearer ") + qgetenv("OPENAI_API_KEY"));
 
-    QJsonObject payload{{"model", "nvidia/nemotron-3-nano-30b-a3b:free"},
+    QJsonObject payload{{"model", m_model},
                         {"stream", true},
                         {"messages", model->modelToJson()}};
 

@@ -15,6 +15,9 @@ class OpenAIClient : public QObject
 public:
     explicit OpenAIClient(QObject *parent = nullptr);
 
+    Q_INVOKABLE QString currentModel() const;
+    Q_INVOKABLE void setModel(const QString &model);
+
     Q_INVOKABLE void sendPrompt(const QString &prompt);
 
 signals:
@@ -29,6 +32,7 @@ private slots:
 private:
     QNetworkAccessManager m_manager;
     QNetworkReply *m_reply = nullptr;
+    QString m_model;
 };
 
 #endif // OPENAICLIENT_H

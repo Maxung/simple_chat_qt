@@ -1,8 +1,11 @@
+#include <QCoreApplication>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 
 int main(int argc, char *argv[]) {
+  QCoreApplication::setOrganizationName("SimpleChatQt");
+  QCoreApplication::setApplicationName("SimpleChatQt");
   QQuickStyle::setStyle("Basic");
   QGuiApplication app(argc, argv);
 
