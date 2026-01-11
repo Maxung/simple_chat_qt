@@ -26,6 +26,7 @@ Rectangle {
         textFormat: Text.RichText
         wrapMode: Text.WordWrap
         readOnly: true
+        selectionColor: Theme.selectionColor
 
         leftPadding: 0
         rightPadding: 0
