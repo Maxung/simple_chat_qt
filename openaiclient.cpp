@@ -21,6 +21,10 @@ QString OpenAIClient::currentModel() const {
     return m_model;
 }
 
+bool OpenAIClient::isLoading() const {
+    return m_isLoading;
+}
+
 void OpenAIClient::setModel(const QString &model) {
     if (model.isEmpty() || model == m_model)
         return;
@@ -34,6 +38,9 @@ void OpenAIClient::sendPrompt(const QString &prompt) {
     auto model = ChatModel::instance();
     model->appendMessage("user", prompt);
     model->appendMessage("assistant", "");
+
+    m_isLoading = true;
+    emit isLoadingChanged();
 
     QNetworkRequest request(
         QUrl("https://openrouter.ai/api/v1/chat/completions"));
@@ -84,6 +91,9 @@ void OpenAIClient::onReadyRead() {
 void OpenAIClient::onFinished() {
     if (m_reply->error() != QNetworkReply::NoError)
         emit error(m_reply->errorString());
+
+    m_isLoading = false;
+    emit isLoadingChanged();
 
     m_reply->deleteLater();
     m_reply = nullptr;

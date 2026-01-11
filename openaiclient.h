@@ -11,6 +11,7 @@ class OpenAIClient : public QObject
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
+    Q_PROPERTY(bool isLoading READ isLoading NOTIFY isLoadingChanged)
 
 public:
     explicit OpenAIClient(QObject *parent = nullptr);
@@ -19,11 +20,13 @@ public:
     Q_INVOKABLE void setModel(const QString &model);
 
     Q_INVOKABLE void sendPrompt(const QString &prompt);
+    bool isLoading() const;
 
 signals:
     void partialResponse(const QString &text);
     void finished();
     void error(const QString &message);
+    void isLoadingChanged();
 
 private slots:
     void onReadyRead();
@@ -33,6 +36,7 @@ private:
     QNetworkAccessManager m_manager;
     QNetworkReply *m_reply = nullptr;
     QString m_model;
+    bool m_isLoading = false;
 };
 
 #endif // OPENAICLIENT_H

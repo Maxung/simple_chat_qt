@@ -17,7 +17,7 @@ Pane {
     }
 
     Component.onCompleted: {
-        promptInput.forceActiveFocus()
+        promptInput.forceActiveFocus();
     }
 
     RowLayout {
@@ -48,8 +48,10 @@ Pane {
             Layout.preferredWidth: 32
             Layout.preferredHeight: 32
             Layout.alignment: Qt.AlignBottom
+            enabled: !OpenAIClient.isLoading
 
-            icon.source: "qrc:/qt/qml/simple_chat_qt/icons/arrow-up.svg"
+            icon.source: OpenAIClient.isLoading ? "qrc:/qt/qml/simple_chat_qt/icons/loader-circle.svg" : "qrc:/qt/qml/simple_chat_qt/icons/arrow-up.svg"
+            icon.color: "black"
             background: Rectangle {
                 radius: height / 2
                 color: submitButton.pressed ? Qt.darker(Theme.primaryButton, 1.2) : Theme.primaryButton
@@ -57,6 +59,16 @@ Pane {
             onClicked: {
                 OpenAIClient.sendPrompt(promptInput.text);
                 promptInput.clear();
+            }
+
+            RotationAnimator {
+                target: submitButton
+                from: 0
+                to: 360
+                duration: 2000
+                loops: Animation.Infinite
+                running: OpenAIClient.isLoading
+                onStopped: submitButton.rotation = 0
             }
         }
         Shortcut {

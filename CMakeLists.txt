@@ -40,6 +40,7 @@ qt_add_qml_module(appsimple_chat_qt
         ui/chat/ChatView.qml
     RESOURCES
         icons/arrow-up.svg
+        icons/loader-circle.svg
         QML_FILES ui/chat/ChatMessage.qml
     SOURCES
         openaiclient.h
