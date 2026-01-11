@@ -7,22 +7,40 @@ Rectangle {
     property bool isUser: false
     property real maxBubbleWidth: 300
 
-    width: textDisplay.width + 24
-    height: textDisplay.height + 16
-    radius: 20
+    property real paddingLeft: 14
+    property real paddingRight: 12
+    property real paddingVertical: 8
 
+    radius: 20
     color: isUser ? Theme.bubbleBackground : Theme.background
     border.color: isUser ? "transparent" : Theme.background
+
+    width: Math.min(textDisplay.implicitWidth + paddingLeft + paddingRight, maxBubbleWidth)
+
+    height: textDisplay.implicitHeight + paddingVertical * 2
 
     TextEdit {
         id: textDisplay
 
         text: bubble.content
-        wrapMode: Text.WordWrap
         textFormat: Text.RichText
-        width: Math.min(implicitWidth - 4, bubble.maxBubbleWidth - 24)
-        anchors.centerIn: parent
-        color: Theme.text
+        wrapMode: Text.WordWrap
         readOnly: true
+
+        leftPadding: 0
+        rightPadding: 0
+        topPadding: 0
+        bottomPadding: 0
+
+        width: bubble.maxBubbleWidth - parent.paddingLeft - parent.paddingRight
+
+        anchors {
+            left: parent.left
+            leftMargin: parent.paddingLeft
+            verticalCenter: parent.verticalCenter
+        }
+
+        color: Theme.text
+        selectByMouse: true
     }
 }
