@@ -12,18 +12,15 @@
 
 OpenAIClient::OpenAIClient(QObject *parent) : QObject(parent) {
     QSettings settings;
-    m_model = settings.value("model",
-                             QStringLiteral("nvidia/nemotron-3-nano-30b-a3b:free"))
-                   .toString();
+    m_model = settings
+                  .value("model",
+                         QStringLiteral("nvidia/nemotron-3-nano-30b-a3b:free"))
+                  .toString();
 }
 
-QString OpenAIClient::currentModel() const {
-    return m_model;
-}
+QString OpenAIClient::currentModel() const { return m_model; }
 
-bool OpenAIClient::isLoading() const {
-    return m_isLoading;
-}
+bool OpenAIClient::isLoading() const { return m_isLoading; }
 
 void OpenAIClient::setModel(const QString &model) {
     if (model.isEmpty() || model == m_model)
@@ -70,8 +67,6 @@ void OpenAIClient::onReadyRead() {
         QByteArray jsonData = line.mid(5).trimmed();
 
         if (jsonData == "[DONE]") {
-            auto model = ChatModel::instance();
-            model->dump();
             emit finished();
             return;
         }
