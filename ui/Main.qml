@@ -19,30 +19,31 @@ ApplicationWindow {
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
         width: Math.min(360, parent.width - 40)
-        implicitHeight: modelEditor.implicitHeight + 40
+        implicitHeight: contentColumn.implicitHeight + 48
         modal: true
         focus: true
-        padding: 20
+        padding: 0
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
             radius: 16
-            color: Theme.base
+            color: Theme.background
             border.color: Qt.alpha(Theme.border, 0.2)
             border.width: 1
         }
 
         ColumnLayout {
+            id: contentColumn
             anchors.fill: parent
-            spacing: 12
+            anchors.margins: 24
+            spacing: 16
 
             Label {
                 text: "Set OpenRouter model"
                 color: Theme.text
                 font.bold: true
+                font.pixelSize: 16
             }
-
-
 
             TextField {
                 id: modelEditor
@@ -50,8 +51,18 @@ ApplicationWindow {
                 placeholderText: "e.g. openai/gpt-5.2"
                 text: OpenAIClient.currentModel()
                 color: Theme.text
+                placeholderTextColor: Theme.placeholderText
                 selectionColor: Theme.selectionColor
                 focus: true
+
+                padding: 12
+
+                background: Rectangle {
+                    color: Theme.base
+                    border.color: Qt.alpha(Theme.border, 0.05)
+                    border.width: 1
+                    radius: 12
+                }
 
                 onAccepted: confirmModel()
 
@@ -59,33 +70,36 @@ ApplicationWindow {
                 Keys.onEnterPressed: confirmModel()
 
                 function confirmModel() {
-                    const trimmed = modelEditor.text.trim()
+                    const trimmed = modelEditor.text.trim();
                     if (!trimmed)
-                        return
-
-                    OpenAIClient.setModel(trimmed)
-                    inputPopup.close()
+                        return;
+                    OpenAIClient.setModel(trimmed);
+                    inputPopup.close();
                 }
             }
         }
 
-
-
         onOpened: {
-            modelEditor.text = OpenAIClient.currentModel()
-            modelEditor.selectAll()
-            modelEditor.forceActiveFocus()
+            modelEditor.text = OpenAIClient.currentModel();
+            modelEditor.selectAll();
+            modelEditor.forceActiveFocus();
         }
     }
 
     Shortcut {
-        sequence: StandardKey.Open
+        sequences: [StandardKey.Open]
         context: Qt.ApplicationShortcut
         onActivated: {
             if (!inputPopup.visible) {
-                inputPopup.open()
+                inputPopup.open();
             }
         }
+    }
+
+    Shortcut {
+        sequences: [StandardKey.Close]
+        context: Qt.ApplicationShortcut
+        onActivated: Qt.quit()
     }
 
     ColumnLayout {
@@ -109,8 +123,7 @@ ApplicationWindow {
                 }
             }
 
-            Layout.preferredHeight: expandRatio * (mainLayout.height - prompt.implicitHeight
-                                                   - mainLayout.spacing)
+            Layout.preferredHeight: expandRatio * (mainLayout.height - prompt.implicitHeight - mainLayout.spacing)
 
             clip: true
 

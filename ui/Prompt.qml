@@ -16,6 +16,10 @@ Pane {
         radius: 16
     }
 
+    Component.onCompleted: {
+        promptInput.forceActiveFocus()
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 8
