@@ -9,6 +9,8 @@ Tech stack:
 
 ## Usage/Shortcuts
 
+Set your API key with `export OPENAI_API_KEY=sk-yourkey`.
+
 - CMD+N/CTRL+N = New chat
 - CMD+O/CTRL+O = Select model
 - CMD+Q/CTRL+Q = Quit
