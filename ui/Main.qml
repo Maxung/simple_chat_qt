@@ -102,6 +102,12 @@ ApplicationWindow {
         onActivated: Qt.quit()
     }
 
+    Shortcut {
+        sequences: [StandardKey.New]
+        context: Qt.ApplicationShortcut
+        onActivated: ChatModel.clear()
+    }
+
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
